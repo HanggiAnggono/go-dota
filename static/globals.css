@@ -79,3 +79,53 @@ body {
 .animated-background-clip {
   animation: moving-shadow 8s infinite alternate ease;
 }
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotate {
+  from {
+    --angle: 0deg;
+  }
+  to {
+    --angle: 360deg;
+  }
+}
+
+.hero-card {
+  position: relative;
+
+  &:hover {
+    transform: scale(1.2);
+    transition: transform 0.2s ease-in-out;
+    z-index: 1;
+  }
+
+  &:hover::after,
+  &:hover::before {
+    --angle: 0deg;
+    content: '';
+    position: absolute;
+    z-index: -1;
+    height: 100%;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    padding: 5px;
+    background-image: conic-gradient(from var(--angle), transparent, cyan 80%);
+    border-radius: 10px;
+    animation: 3s rotate linear infinite;
+  }
+
+  &:hover::before {
+    --angle: 0deg;
+    background-image: conic-gradient(from var(--angle), blue, cyan 80%);
+    filter: blur(1rem);
+    height: 125%;
+    width: 125%;
+  }
+}

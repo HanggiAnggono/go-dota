@@ -33,8 +33,10 @@ func Home(heroes *[]opendota.Hero) Node {
 							Class("grid grid-cols-7 gap-1"),
 							Map(heroesByAttributes[attr], func(hero opendota.Hero) Node {
 
-								return Div(
-									Img(Class("w-20 h-14"),Src(opendota.DotaImageHost+hero.Img)),
+								return A(
+									Class("hero-card w-20 h-12 flex items-center justify-center"),
+									Href("/hero/"+hero.Name),
+									Img(Class("size-[95%] rounded-md"),Src(opendota.DotaImageHost+hero.Img)),
 								)
 							}),
 						),
