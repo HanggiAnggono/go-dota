@@ -1,8 +1,6 @@
 package pages
 
 import (
-	"encoding/json"
-	"fmt"
 	"os"
 
 	. "maragu.dev/gomponents"
@@ -10,20 +8,18 @@ import (
 )
 
 // TODO: handle dark and light mode
-var colors = map[string]string{
-	"background": "#3e3a44",
-	"foreground": "#d3d3d3",
-	"primary":    "#1E40AF",
-	"secondary":  "#1F2937",
-}
-
-var jsonColors, _ = json.Marshal(colors)
+var tailwindConfig, err1 = os.ReadFile("static/tailwind.config.js")
+var tailwindConfigString = string(tailwindConfig)
 
 var globalsCSS, err = os.ReadFile("static/globals.css")
 var globalsCSSString = string(globalsCSS)
 
 
 func Tailwind() Node {
+	if err1 != nil {
+		println(err1.Error())
+	}
+
 	if err != nil {
 		println(err.Error())
 	}
@@ -31,15 +27,7 @@ func Tailwind() Node {
 	return Group(
 		[]Node{
 			Script(Src("https://cdn.tailwindcss.com")),
-			Script(Raw(
-				`tailwind.config = {
-				theme: {
-					extend: {
-						colors: ` + fmt.Sprintf("%v", string(jsonColors)) + `,
-					}
-				}
-			}`,
-			)),
+			Script(Raw(tailwindConfigString)),
 			StyleEl(Type("text/tailwindcss"), Raw(globalsCSSString)),
 		},
 	)

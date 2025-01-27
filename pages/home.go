@@ -18,6 +18,7 @@ func Home(heroes *[]opendota.Hero) Node {
 	})
 
 	return Layout(
+		"Go Dota",
 		Div(
 			Class("flex flex-col items-center justify-center p-10"),
 			H1(Class("text-5xl font-extrabold bg-gradient-to-r from-blue-500 to-pink-500 bg-clip-text text-transparent"), Text("Welcome to Go-Dota")),
@@ -36,7 +37,11 @@ func Home(heroes *[]opendota.Hero) Node {
 								return A(
 									Class("hero-card w-20 h-12 flex items-center justify-center"),
 									Href("/hero/"+hero.Name),
-									Img(Class("size-[95%] rounded-md"),Src(opendota.DotaImageHost+hero.Img)),
+									Img(
+										Class("size-[95%] rounded-md"),
+										Src(opendota.DotaImageHost+hero.Img),
+										Attr("onload", "this.style.opacity=1"),
+									),
 								)
 							}),
 						),

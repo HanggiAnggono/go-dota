@@ -11,6 +11,7 @@ func main() {
 	router := gin.New()
 	router.Static("/static", "./static")
 
+	router.GET("/hero/:name", handlers.HeroDetail)
 	router.GET("/", handlers.Home)
 
   println("Listening on port 3000")
