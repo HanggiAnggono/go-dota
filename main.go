@@ -9,11 +9,8 @@ import (
 
 func main() {
 	router := gin.New()
-	router.Static("/static", "./static")
+	handlers.Register(router)
 
-	router.GET("/hero/:name", handlers.HeroDetail)
-	router.GET("/", handlers.Home)
-
-  println("Listening on port 3000")
-  http.ListenAndServe(":3000", router)
+	println("Listening on port 3000")
+	http.ListenAndServe(":3000", router)
 }
