@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"hanggi.com/go-dota/api"
+	"hanggi.com/go-dota/services/api"
 )
 
 func GetHeroes() []Hero {
