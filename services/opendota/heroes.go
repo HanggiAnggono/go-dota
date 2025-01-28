@@ -95,8 +95,8 @@ type Hero struct {
 
 type HeroDetail struct {
 	Hero
-	Constants HeroConstant  `json:"constants"`
-	Lore      string        `json:"lore"`
+	Constants     HeroConstant  `json:"constants"`
+	Lore          string        `json:"lore"`
 	HeroAbilities HeroAbilities `json:"abilities"`
 }
 
@@ -165,6 +165,30 @@ type Ability struct {
 	Lore      string   `json:"lore"`
 	Img       string   `json:"img"`
 	IsInnate  bool     `json:"is_innate"`
+	CD        any      `json:"cd"` // cooldown
+	MC        any      `json:"mc"` // manacost
+}
+
+func (a *Ability) GetCooldownString() string {
+	var cd string
+	switch a.CD.(type) {
+	case string:
+		cd = a.CD.(string)
+	case []string:
+		cd = strings.Join(a.CD.([]string), "/")
+	}
+	return cd
+}
+
+func (a *Ability) GetManacostString() string {
+	var mc string
+	switch a.MC.(type) {
+	case string:
+		mc = a.MC.(string)
+	case []string:
+		mc = strings.Join(a.MC.([]string), "/")
+	}
+	return mc
 }
 
 type Attrib struct {

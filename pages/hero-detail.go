@@ -8,6 +8,7 @@ import (
 	"hanggi.com/go-dota/components"
 	"hanggi.com/go-dota/services/opendota"
 	. "maragu.dev/gomponents"
+	. "maragu.dev/gomponents/components"
 	. "maragu.dev/gomponents/html"
 )
 
@@ -17,6 +18,7 @@ func HeroDetail(heroDetail *opendota.HeroDetail) Node {
 	return Layout(
 		fmt.Sprintf("Go Dota | %s", heroDetail.LocalizedName),
 		HeroDetailHeader(heroDetail),
+		HeroDetailAttributes(heroDetail),
 		HeroDetailAbilities(shortname, heroDetail.HeroAbilities),
 	)
 }
@@ -29,13 +31,13 @@ func HeroDetailHeader(heroDetail *opendota.HeroDetail) Node {
 		Div(
 			Class("p-10 flex flex-col w-2/5"),
 			H1(
-				Class("text-5xl font-extrabold bg-gradient-to-r from-blue-500 to-pink-500 bg-clip-text text-transparent"),
+				Class("text-8xl font-extrabold bg-gradient-to-r from-blue-500 to-pink-500 bg-clip-text text-transparent"),
 				Text(heroDetail.LocalizedName),
 			),
 			Details(
 				Summary(
 					Class("text-lg mt-4"),
-					Text(heroDetail.Lore[:100]+"...Click to read more"),
+					Text(heroDetail.Lore[:200]+"...Click to read more"),
 				),
 				Span(
 					Text(heroDetail.Lore),
@@ -53,13 +55,22 @@ func HeroDetailHeader(heroDetail *opendota.HeroDetail) Node {
 						return Div(
 							Div(
 								If(!abilityDetail.IsInnate, Div(
-									Img(Class("size-20 rounded-md"), Src(opendota.DotaImageHost+abilityDetail.Img)),
+									Img(Class("size-20 rounded-md shadow-md relative z-20"), Src(opendota.DotaImageHost+abilityDetail.Img)),
 								)),
 							),
 						)
 					}),
 				),
 			),
+		),
+	)
+}
+
+func HeroDetailAttributes(heroDetail *opendota.HeroDetail) Node {
+	return Div(
+		Class("relative z-10 h-40 mt-4 mb-10 [box-shadow:black_0rem_-5rem_8rem_8rem] bg-gradient-to-l from-gray-600 to-black p-10 flex items-center justify-center"),
+		Div(
+			Img(Src(opendota.DotaImageHost+heroDetail.Img)),
 		),
 	)
 }
@@ -81,7 +92,7 @@ func HeroDetailAbilities(heroShortname string, heroAbilities opendota.HeroAbilit
 				return Div(
 					Class("flex flex-col-reverse"),
 					Label(
-						Class("peer"),
+						Class("peer shadow-md hover:scale-110 cursor-pointer transition-transform"),
 						Input(
 							Class("invisible peer/a"),
 							Type("radio"),
@@ -107,22 +118,64 @@ func HeroDetailAbilities(heroShortname string, heroAbilities opendota.HeroAbilit
 									),
 								),
 							),
-							Div(
-								Class("bg-background p-2 w-1/3 flex gap-2"),
-								Img(
-									Class("size-20"),
-									Src(opendota.DotaImageHost+abilityDetail.Img),
-									Alt(abilityDetail.Dname),
-								),
-								Div(
-									H2(Class("text-2xl font-bold"), Text(abilityDetail.Dname)),
-									P(Text(lo.If(len(abilityDetail.Desc) > 0, abilityDetail.Desc).Else(abilityDetail.Lore))),
-								),
-							),
+							AbilityDetail(abilityDetail),
 						),
 					),
 				)
 			}),
+		),
+	)
+}
+
+func AbilityDetail(abilityDetail opendota.Ability) Node {
+	return Div(
+		Class("bg-gray-500 flex flex-col w-1/3 max-h-[720px] overflow-visible"),
+		Div(
+			Class("flex p-4 gap-2"),
+			Img(
+				Class("size-20"),
+				Src(opendota.DotaImageHost+abilityDetail.Img),
+				Alt(abilityDetail.Dname),
+			),
+			Div(
+				H2(Class("text-2xl font-bold"), Text(abilityDetail.Dname)),
+				P(Text(lo.If(len(abilityDetail.Desc) > 0, abilityDetail.Desc).Else(abilityDetail.Lore))),
+			),
+		),
+		Div(
+			Class("bg-gray-800 p-4 flex-grow"),
+			Map(abilityDetail.Attrib, func(attrib opendota.Attrib) Node {
+				var values string
+				switch attrib.Value.(type) {
+				case string:
+					values = attrib.Value.(string)
+				case []string:
+					values = strings.Join(attrib.Value.([]string), "/")
+				}
+
+				return Div(
+					Class("flex gap-2"),
+					Span(Class("text-gray-500"), Text(strings.Title(strings.ToLower(attrib.Header)))),
+					Span(Text(values)),
+				)
+			}),
+			Div(
+				Class("mt-auto flex justify-between"),
+				// cooldown
+				Div(
+					Class("flex items-center gap-2"),
+					Div(Classes{
+						"size-4 rounded-sm [background-image:conic-gradient(grey_0%,grey_40%,black_50%,black_100%)]": true,
+						"invisible": len(abilityDetail.GetCooldownString()) == 0,
+					}),
+					Span(Text(abilityDetail.GetCooldownString())),
+				),
+				Div(
+					Class("flex items-center gap-2"),
+					Div(Class("size-4 bg-blue-400 rounded-sm")),
+					Span(Text(abilityDetail.GetManacostString())),
+				),
+			),
 		),
 	)
 }
